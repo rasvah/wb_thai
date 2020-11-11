@@ -23,6 +23,7 @@ class Bond(Instrument):
         self.maturity = maturity
         self.issuance_cost = issuance_cost
         self.coupon = coupon
+        self.symbol = symbol
         self.secondary_cashflow_month = self._get_secondary_cashflow_month()
 
     def get_CFs_period(self, begin, end):
