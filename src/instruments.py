@@ -47,7 +47,7 @@ class Bond(Instrument):
         return amounts, dates
 
     def _get_amortized_cost_period(self, begin, end):
-        return issuance_cost * (end - begin) / (self.maturity - self.settle)
+        return self.issuance_cost * (end - begin) / (self.maturity - self.settle)
 
     def _get_CF_dates(self):
         year_range = range(self.settle.year, self.maturity.year + 1)
