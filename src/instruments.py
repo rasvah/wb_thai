@@ -48,8 +48,13 @@ class Bond(Instrument):
         return amounts, dates
 
     def _get_amortized_cost_period(self, begin, end):
-        return self.issuance_cost * (end - begin) / (self.maturity - self.settle)
+        return self.issuance_cost * (end - begin).days / (self.maturity - self.settle).days
 
+    def _get_cost_period(self, begin, end):
+        amortizing = self._get_amortized_cost_period(begin, end)
+        coupon_cost = self.coupon * (end - begin).days/365
+        return amortizing + coupon_cost
+    
     def _get_CF_dates(self):
         year_range = range(self.settle.year, self.maturity.year + 1)
         CF_dates = []
@@ -62,11 +67,6 @@ class Bond(Instrument):
             CF_dates.append(date(y, m, d))
         return sorted([d for d in CF_dates if d >= self.settle and d <= self.maturity])
     
-    def _get_cost_period(self, begin, end):
-        amortizing = self._get_amortized_cost_period(begin, end)
-        coupon_cost = self.coupon * (end - begin)/360
-        return amortizing + coupon_cost
-
     def _get_secondary_cashflow_month(self):
         if self.maturity.month > 6:
             return self.maturity.month - 6
