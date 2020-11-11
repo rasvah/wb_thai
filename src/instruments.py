@@ -33,7 +33,7 @@ class Bond(Instrument):
 
     def get_cost_period(self, begin, end):
         begin = min(max(begin, self.settle), self.maturity)
-        end = min(min(end, self.maturity), self.settle)
+        end = max(min(end, self.maturity), self.settle)
         return self._get_cost_period(begin, end)
 
     def get_coupons(self):
