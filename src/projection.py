@@ -1,4 +1,5 @@
 from scipy.interpolate import interp1d
+from datetime import date
 
 class YieldCurve:
     def __init__(self, dates, yields, mats):
