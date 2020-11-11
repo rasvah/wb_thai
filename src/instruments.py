@@ -3,17 +3,35 @@ from pandas import DataFrame
 from calendar import monthrange
 import numpy as np
 
-class Bond:
-    def __init__(self, settle, maturity, coupon, symbol):
+
+class TBill():
+    def __init__(self, settle, maturity, price, symbol):
         self.settle = settle
         self.maturity = maturity
-        self.coupon = coupon
+        self.price = price
         self.symbol = symbol
-        self.secondary_cashflow_month = self.get_secondary_cashflow_month()
 
     def get_days_to_maturity(self):
         return (self.maturity - self.settle).days
-    
+
+    def get_cost_period(self, begin, end):
+        begin = min(max(begin, self.settle), self.maturity)
+        end = min(min(end, self.maturity), self.settle)
+        return self._get_cost_period(being, end)
+
+    def _get_cost_period(self, begin, end):
+        return self.get_ptp_period(begin, end)
+
+    def get_ptp_period(self, begin, end):
+        return (1 - self.price) * (end - begin) / (self.maturity - self.settle)
+
+
+class Bond(TBill):
+    def __init__(self, settle, maturity, price, coupon, symbol):
+        super().__init__(settle, maturity, price, symbol)
+        self.coupon = coupon
+        self.secondary_cashflow_month = self.get_secondary_cashflow_month()
+
     def get_CF_dates(self):
         year_range = range(self.settle.year, self.maturity.year + 1)
         CF_dates = []
@@ -26,10 +44,10 @@ class Bond:
             CF_dates.append(date(y, m, d))
         return sorted([d for d in CF_dates if d >= self.settle and d <= self.maturity])
     
-    def get_cost_period(self, begin, end):
-        coupons, dates = self.get_coupons()
-        index = [(d <= end) & (d > begin) for d in dates]
-        return np.array(coupons)[index].sum()
+    def _get_cost_period(self, begin, end):
+        ptp = self.get_ptp_period(begin, end)
+        coupon_cost = self.coupon * (end - begin)/360
+        return ptp + coupon_cost
 
     def get_CFs_period(self, begin, end):
         CFs, dates = self.get_CFs()
@@ -55,9 +73,4 @@ class Bond:
 
     def get_adjusted_dom(self, y, month, day):
         _, eom = monthrange(y, month)
-        return min(day, eom) 
-
-class TBill():
-    def __init__(self):
-        pass
-    
+        return min(day, eom)

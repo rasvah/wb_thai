@@ -51,6 +51,7 @@ class IssuanceProjector:
         self.end_date = end_date
         self.step_size = step_size
         self.current_debt = DebtPortfolio()        
+        self.new_debt = DebtPortfolio()
 
     def add_current_debt(self, current_debt):
         self.current_debt = current_debt
@@ -63,6 +64,7 @@ class IssuanceProjector:
         amount_needed_ = []
         deficit_financing_ = []
         cur_debt_financing_ = []
+        new_debt_financing_ = []
         for j, d in enumerate(dates[1:]):
           # calculate eom issuance needs
           # primary deficit
@@ -71,16 +73,20 @@ class IssuanceProjector:
           # cur_debt
           cur_debt_financing = self.current_debt.get_CF_period(dates[j], d)
 
+          # new_debt
+          new_debt_financing = self.new_debt.get_CF_period(dates[j], d)
+
           amount_needed = deficit_financing + cur_debt_financing 
 
           # issue new_debt and add to new_debt_portfolio
           issuance = issuance_strategy.get_issuance(d, amount_needed, yield_curve)
           for p in issuance:
-            self.current_debt.add_position(p)
+            self.new_debt.add_position(p)
 
           amount_needed_.append(amount_needed)
           deficit_financing_.append(deficit_financing)
           cur_debt_financing_.append(cur_debt_financing)
+          new_debt_financing_.append(new_debt_financing)
 
         return DataFrame(data = list(zip(*[amount_needed_, deficit_financing_, cur_debt_financing_])),
          index = dates[1:], columns= ['total issuance', 'deficit', 'refinancing'])

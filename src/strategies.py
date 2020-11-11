@@ -23,6 +23,7 @@ class SingleBond(IssuanceStrategy):
         d = min(settle.day, monthrange(y, m)[1])
 
         maturity = date(y, m, d)
+        price = 1
         coupon = yield_curve.get_yield(settle, self.ttm)
         symbol = f'{self.ttm} Bond {maturity}, {coupon*100:.2f} %'
-        return [dpf.Position(inst.Bond(issuance_date, maturity, coupon, symbol), amount)]
+        return [dpf.Position(inst.Bond(issuance_date, maturity, price, coupon, symbol), amount)]
