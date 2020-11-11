@@ -33,7 +33,7 @@ class DebtPortfolio:
     def get_CFs(self, eval_date):
         CFs = [p.get_CFs() for p in self.positions]
         df = pd.concat(CFs, axis=1)
-        df = df.fillna(value=0)
+        df = df.fillna(value=0).sort_index()
         return df.iloc[df.index >= eval_date, :]
 
     def get_CF_period(self, begin, end):
