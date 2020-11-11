@@ -88,8 +88,8 @@ class IssuanceProjector:
           cur_debt_financing_.append(cur_debt_financing)
           new_debt_financing_.append(new_debt_financing)
 
-        return DataFrame(data = list(zip(*[amount_needed_, deficit_financing_, cur_debt_financing_])),
-         index = dates[1:], columns= ['total issuance', 'deficit', 'refinancing'])
+        return DataFrame(data = list(zip(*[amount_needed_, deficit_financing_, cur_debt_financing_, new_debt_financing_])),
+         index = dates[1:], columns= ['total issuance', 'deficit financing', 'current debt financing', 'new debt financing'])
 
 
     def get_dates(self):
