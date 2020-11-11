@@ -19,12 +19,28 @@ class TBill():
         end = min(min(end, self.maturity), self.settle)
         return self._get_cost_period(being, end)
 
+    def get_CFs_period(self, begin, end):
+        CFs, dates = self.get_CFs()
+        index = [(d <= end) & (d > begin) for d in dates]
+        return np.array(CFs)[index].sum()
+
     def _get_cost_period(self, begin, end):
         return self.get_ptp_period(begin, end)
 
     def get_ptp_period(self, begin, end):
         return (1 - self.price) * (end - begin) / (self.maturity - self.settle)
+    
+    def get_CFs(self):
+        dates = self.get_CF_dates()
+        amounts = []
+        if len(dates) != 0:
+            amounts = [1] # Add principal
+        return amounts, dates
 
+    def get_CF_dates(self):
+        CF_dates = []
+        CF_dates.append(self.maturity)
+        return sorted([d for d in CF_dates if d >= self.settle and d <= self.maturity])
 
 class Bond(TBill):
     def __init__(self, settle, maturity, price, coupon, symbol):
@@ -48,11 +64,6 @@ class Bond(TBill):
         ptp = self.get_ptp_period(begin, end)
         coupon_cost = self.coupon * (end - begin)/360
         return ptp + coupon_cost
-
-    def get_CFs_period(self, begin, end):
-        CFs, dates = self.get_CFs()
-        index = [(d <= end) & (d > begin) for d in dates]
-        return np.array(CFs)[index].sum()
 
     def get_coupons(self):
         dates = self.get_CF_dates()
