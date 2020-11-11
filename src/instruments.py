@@ -79,7 +79,7 @@ class Bond(Instrument):
 
 class TBill(Bond):
     def __init__(self, settle, maturity, residual_issuance_cost, symbol):
-        super().__init__(settle, maturity, residual_issuance_cost, coupon = 0, symbol)
+        super().__init__(settle, maturity, residual_issuance_cost, 0, symbol)
  
     def _get_cost_period(self, begin, end):
         return self._get_amortized_cost_period(begin, end)
