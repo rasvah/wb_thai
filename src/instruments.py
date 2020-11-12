@@ -18,6 +18,7 @@ class Instrument():
         return (self.maturity - eval_date).days
 
 class Bond(Instrument):
+    """ Bond instrument class """
     def __init__(self, settle, maturity, issuance_cost, coupon, symbol):
         self.settle = settle
         self.maturity = maturity
