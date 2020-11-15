@@ -8,6 +8,9 @@ class Instrument():
     def __init__(self):
         raise NotImplementedError
 
+    def get_clean_price(self, eval_date, ytm):
+        raise NotImplementedError
+
     def get_CFs_period(self, begin, end):
         raise NotImplementedError
 
@@ -26,6 +29,16 @@ class Bond(Instrument):
         self.coupon = coupon
         self.symbol = symbol
         self.secondary_cashflow_month = self._get_secondary_cashflow_month()
+
+    def get_clean_price(self, eval_date, ytm):
+        amounts, dates = self.get_CFs()
+        price = 0
+        for j, d in enumerate(dates):
+            if d > eval_date:
+                ttm = (d - eval_date).days / 365
+                df  = 1 / (1 + ytm)^ttm
+                p += amounts[j] * df
+        return price
 
     def get_CFs_period(self, begin, end):
         CFs, dates = self.get_CFs()
