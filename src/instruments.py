@@ -36,7 +36,7 @@ class Bond(Instrument):
         for j, d in enumerate(dates):
             if d > eval_date:
                 ttm = (d - eval_date).days / 365
-                df  = 1 / (1 + ytm)^ttm
+                df  = 1 / (1 + ytm)**ttm
                 p += amounts[j] * df
         return price
 
