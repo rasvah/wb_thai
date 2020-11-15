@@ -37,7 +37,7 @@ class Bond(Instrument):
             if d > eval_date:
                 ttm = (d - eval_date).days / 365
                 df  = 1 / (1 + ytm)**ttm
-                p += amounts[j] * df
+                price += amounts[j] * df
         return price
 
     def get_CFs_period(self, begin, end):
