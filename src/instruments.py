@@ -4,7 +4,7 @@ from calendar import monthrange
 import numpy as np
 
 class Instrument():
-    """ Abstract class/interface for instruments """
+    """Abstract class/interface for instruments."""
     def __init__(self):
         raise NotImplementedError
 
@@ -21,7 +21,7 @@ class Instrument():
         return (self.maturity - eval_date).days
 
 class Bond(Instrument):
-    """ Bond instrument class """
+    """Bond instrument class"""
     def __init__(self, settle, maturity, issuance_cost, coupon, symbol):
         self.settle = settle
         self.maturity = maturity
@@ -40,10 +40,11 @@ class Bond(Instrument):
                 price += amounts[j] * df
         return price
 
-    def get_CFs_period(self, begin, end):
-        CFs, dates = self.get_CFs()
-        index = [(d <= end) & (d > begin) for d in dates]
-        return np.array(CFs)[index].sum()    
+    def get_CFs_period(self, begin: date, end: date) -> float:
+        """Return sum of all cashflows between begin and end date."""
+        CFs, all_dates = self.get_CFs()
+        include = [(d <= end) & (d > begin) for d in all_dates]
+        return np.array(CFs)[include].sum()
 
     def get_cost_period(self, begin, end):
         begin = min(max(begin, self.settle), self.maturity)
@@ -81,13 +82,16 @@ class Bond(Instrument):
             CF_dates.append(date(y, m, d))
         return sorted([d for d in CF_dates if d >= self.settle and d <= self.maturity])
     
-    def _get_secondary_cashflow_month(self):
+    def _get_secondary_cashflow_month(self) -> int:
+        """Return the month of the coupons which are offset 6 months relative 
+           to the maturity date. Relevant only for bonds with semi-annual coupons."""
         if self.maturity.month > 6:
             return self.maturity.month - 6
         else:
             return self.maturity.month + 6
 
-    def _get_adjusted_dom(self, y, month, day):
+    def _get_adjusted_dom(self, y: int, month: int, day: int) -> int:
+        """Return 28 instead of 29 as last day of February for non-leap years."""
         _, eom = monthrange(y, month)
         return min(day, eom)
 
