@@ -76,7 +76,7 @@ class IssuanceProjector:
           # new_debt
           new_debt_financing = self.new_debt.get_CF_period(dates[j], d)
 
-          amount_needed = deficit_financing + cur_debt_financing 
+          amount_needed = deficit_financing + cur_debt_financing + new_debt_financing
 
           # issue new_debt and add to new_debt_portfolio
           issuance = issuance_strategy.get_issuance(d, amount_needed, yield_curve)
