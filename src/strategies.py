@@ -2,7 +2,7 @@ import src.instruments as inst
 import src.debt_portfolio as dpf
 
 from calendar import monthrange
-from datetime import date
+from datetime import date, timedelta, datetime
 
 class IssuanceStrategy():
     def __init__(self):
@@ -18,11 +18,12 @@ class SingleBond(IssuanceStrategy):
     def get_issuance(self, issuance_date, amount, yield_curve):
         settle = issuance_date
 
-        y = settle.year + self.ttm
+        y = settle.year
         m = settle.month
-        d = min(settle.day, monthrange(y, m)[1])
+        d = settle.day
 
-        maturity = date(y, m, d)
+        maturity = datetime(y, m, d) + timedelta(days = self.ttm*365)
+        maturity = maturity.date()
         issuance_cost = 0 # Par bond
         coupon = yield_curve.get_yield(settle, self.ttm)
         symbol = f'{self.ttm} Bond {maturity}, {coupon*100:.2f} %'
