@@ -57,6 +57,13 @@ class IssuanceProjector:
     
     def add_current_debt(self, current_debt):
         self.current_debt = current_debt
+        self._cur_debt_financing = []
+
+        dates = self.get_dates()
+        dates.insert(0, self.eval_date)
+        for j, d in enumerate(dates[1:]):
+            # cur_debt
+            self._cur_debt_financing.append(self.current_debt.get_CF_period(dates[j], d))
 
     def get_issuance(self, primary_deficit, issuance_strategy, yield_curve):
         # build up debt portfolio
@@ -65,20 +72,17 @@ class IssuanceProjector:
 
         amount_needed_ = []
         deficit_financing_ = []
-        cur_debt_financing_ = []
+
         new_debt_financing_ = []
         for j, d in enumerate(dates[1:]):
           # calculate eom issuance needs
           # primary deficit
           deficit_financing = primary_deficit.get(dates[j], d)
-          
-          # cur_debt
-          cur_debt_financing = self.current_debt.get_CF_period(dates[j], d)
 
           # new_debt
           new_debt_financing = self.new_debt.get_CF_period(dates[j], d)
 
-          amount_needed = deficit_financing + cur_debt_financing + new_debt_financing
+          amount_needed = deficit_financing + self._cur_debt_financing[j] + new_debt_financing
 
           # issue new_debt and add to new_debt_portfolio
           issuance = issuance_strategy.get_issuance(d, amount_needed, yield_curve)
@@ -87,10 +91,10 @@ class IssuanceProjector:
 
           amount_needed_.append(amount_needed)
           deficit_financing_.append(deficit_financing)
-          cur_debt_financing_.append(cur_debt_financing)
+
           new_debt_financing_.append(new_debt_financing)
 
-        return DataFrame(data = list(zip(*[amount_needed_, deficit_financing_, cur_debt_financing_, new_debt_financing_])),
+        return DataFrame(data = list(zip(*[amount_needed_, deficit_financing_, self._cur_debt_financing, new_debt_financing_])),
          index = dates[1:], columns= ['total issuance', 'deficit financing', 'current debt financing', 'new debt financing'])
 
 
