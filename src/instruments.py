@@ -3,6 +3,13 @@ from pandas import DataFrame
 from calendar import monthrange
 import numpy as np
 
+
+def get_adjusted_dom(year: int, month: int, day: int) -> int:
+    """Return 28 instead of 29 as last day of February for non-leap years."""
+    _, eom = monthrange(year, month)
+    return min(day, eom)
+
+
 class Instrument():
     """Abstract class/interface for instruments."""
     def __init__(self):
@@ -40,25 +47,6 @@ class Bond(Instrument):
                 price += amounts[j] * df
         return price
 
-    def get_CFs_period(self, begin, end):
-        # Example of commenting style to be avoided:
-        # ===========================================================
-        # = This method returns the sum of cashflows in the period  = 
-        # =                                                         =       
-        # = Inputs:                                                 =
-        # = -------                                                 =
-        # =   'begin': a datetime.date object                       =
-        # =   'end'  : a datetime.date object                       =
-        # =                                                         =
-        # = Outputs:                                                =
-        # = --------                                                =
-        # =    float containing the sum of cashflows                =
-        # =                                                         =
-        # ============================================================
-        CFs, all_dates = self.get_CFs()
-        include = [(d <= end) & (d > begin) for d in all_dates]
-        return np.array(CFs)[include].sum()
-
     def get_CFs_period(self, begin: date, end: date) -> float:
         """Return sum of all cashflows between begin and end date."""
         CFs, all_dates = self.get_CFs()
@@ -94,10 +82,10 @@ class Bond(Instrument):
         CF_dates = []
         for y in year_range:
             m = self.maturity.month
-            d =  self._get_adjusted_dom(y, m, self.maturity.day)
+            d =  get_adjusted_dom(y, m, self.maturity.day)
             CF_dates.append(date(y, m, d))
             m =  self.secondary_cashflow_month
-            d = self._get_adjusted_dom(y, m, self.maturity.day)
+            d = get_adjusted_dom(y, m, self.maturity.day)
             CF_dates.append(date(y, m, d))
         return sorted([d for d in CF_dates if d >= self.settle and d <= self.maturity])
     
@@ -108,11 +96,6 @@ class Bond(Instrument):
             return self.maturity.month - 6
         else:
             return self.maturity.month + 6
-
-    def _get_adjusted_dom(self, y: int, month: int, day: int) -> int:
-        """Return 28 instead of 29 as last day of February for non-leap years."""
-        _, eom = monthrange(y, month)
-        return min(day, eom)
 
 
 class TBill(Bond):
