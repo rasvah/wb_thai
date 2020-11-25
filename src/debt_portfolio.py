@@ -52,6 +52,9 @@ class IssuanceProjector:
         self.current_debt = DebtPortfolio()        
         self.new_debt = DebtPortfolio()
 
+    def reset_new_debt(self):
+        self.new_debt = DebtPortfolio()
+    
     def add_current_debt(self, current_debt):
         self.current_debt = current_debt
 

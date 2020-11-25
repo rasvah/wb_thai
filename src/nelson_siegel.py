@@ -13,7 +13,7 @@ class NelsonSiegel():
         
     def estimate_factors(self):
         T = self.yields.shape[0]
-        loadings = self._get_loadings(self.mats)
+        loadings = self._get_loadings(self.mats, self.lambda_)
         self.betas = np.zeros([T, loadings.shape[1]])
         self.sse = 0
 
@@ -25,13 +25,17 @@ class NelsonSiegel():
         self.fit_err = self.yields - self.get_fitted_yields(self.mats)
 
     def get_fitted_yields(self, mats):
-        loadings = self._get_loadings(mats)
+        loadings = self._get_loadings(mats, self.lambda_)
         return self.betas @ loadings.T
 
-    def _get_loadings(self, mats):
+    def get_yields_from_factors(self, factors, mats, lambda_):
+        loadings = self._get_loadings(mats, self.lambda_)
+        return factors @ loadings.T
+
+    def _get_loadings(self, mats, lambda_):
         # mats: (n_mats x 1) np.array
         # return:  (n_mats x 3) np.array
-        scaled_mats = mats * self.lambda_
+        scaled_mats = mats * lambda_
         loading0 = np.ones_like([mats])
         loading1 = (1 - np.exp(-scaled_mats)) / (scaled_mats)
         loading2 = (1 - np.exp(-scaled_mats)) / (scaled_mats) \
@@ -77,7 +81,7 @@ class NelsonSiegel():
 
     def plot_factor_loadings(self):
         plot_mats = np.arange(1, 30)
-        loads = self._get_loadings(plot_mats)
+        loads = self._get_loadings(plot_mats, self.lambda_)
         for j in range(loads.shape[1]):
           plt.plot(plot_mats, loads[:, j], label = f"beta {j}" )
           plt.xlabel('Maturity')
