@@ -5,7 +5,7 @@ import numpy as np
 class NelsonSiegelModel():
 
     def get_yields_from_factors(self, factors, mats, lambda_):
-        loadings = self._get_loadings(mats, self.lambda_)
+        loadings = self._get_loadings(mats, lambda_)
         return factors @ loadings.T
 
     def _get_loadings(self, mats, lambda_):
