@@ -1,3 +1,4 @@
+import pytest
 from datetime import date
 import numpy as np
 from numpy.testing import assert_array_equal
@@ -5,13 +6,17 @@ from numpy.testing import assert_array_equal
 from src.instruments import Bond
 
 
-def test_get_coupons_LB246A():
+@pytest.fixture
+def bond():
     settle = date(2020, 11, 26)
     maturity = date(2024, 6, 17)
     issuance_cost = 0.0
     coupon = 0.0075
     symbol = "LB246A"
-    bond = Bond(settle, maturity, issuance_cost, coupon, symbol)
+    return Bond(settle, maturity, issuance_cost, coupon, symbol)
+
+
+def test_get_coupons_LB246A(bond):
     actual_amounts, actual_dates = bond.get_coupons()
     expected_dates = [date(2020, 12, 17), \
         date(2021, 6, 17), date(2021, 12, 17),
@@ -24,13 +29,7 @@ def test_get_coupons_LB246A():
     assert actual_dates == expected_dates
 
 
-def test_get_CFs_period_LB246A():
-    settle = date(2020, 11, 26)
-    maturity = date(2024, 6, 17)
-    issuance_cost = 0.0
-    coupon = 0.0075
-    symbol = "LB246A"
-    bond = Bond(settle, maturity, issuance_cost, coupon, symbol)
+def test_get_CFs_period_LB246A(bond):
     begin_date = date(2021, 1, 1)
     end_date = date(2023, 12, 31)
     actual = bond.get_CFs_period(begin_date, end_date)
