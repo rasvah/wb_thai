@@ -46,10 +46,9 @@ class DebtPortfolio:
 
 
 class IssuanceProjector:
-    def __init__(self, eval_date, end_date, step_size = 12):
+    def __init__(self, eval_date, end_date):
         self.eval_date = eval_date
         self.end_date = end_date
-        self.step_size = step_size
         self.current_debt = DebtPortfolio()        
         self.new_debt = DebtPortfolio()
 

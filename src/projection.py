@@ -21,7 +21,7 @@ class YieldCurve:
 
       else:
         y_end = y[self.dates.index(year_end)]
-        days_in_year =(year_end - year_start)
+        days_in_year = (year_end - year_start)
         y = y_start * (date_ - year_start) / days_in_year + y_end * (year_end - date_) / days_in_year
 
       return y

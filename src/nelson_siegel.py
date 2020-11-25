@@ -32,16 +32,15 @@ class NelsonSiegel():
         # mats: (n_mats x 1) np.array
         # return:  (n_mats x 3) np.array
         scaled_mats = mats * self.lambda_
-        factor_1 = np.ones_like([mats])
-        factor_2 = (1 - np.exp(-scaled_mats)) / (scaled_mats)
-        factor_3 = (1 - np.exp(-scaled_mats)) / (scaled_mats) \
+        loading0 = np.ones_like([mats])
+        loading1 = (1 - np.exp(-scaled_mats)) / (scaled_mats)
+        loading2 = (1 - np.exp(-scaled_mats)) / (scaled_mats) \
         - np.exp(-scaled_mats)
-        return np.vstack([factor_1, factor_2, factor_3]).T
+        return np.vstack([loading0, loading1, loading2]).T
 
     def _estimate_OLS_factors(self, yields, loadings):
         X = loadings
         Y = yields
-     #   beta = np.linalg.solve(X.T @ X, X.T @ Y)
         beta = np.linalg.inv(X.T @ X) @ (X.T @ Y)
         u_hat = Y - X @ beta
         SSE = np.sum([x**2 for x in u_hat])
@@ -78,9 +77,9 @@ class NelsonSiegel():
 
     def plot_factor_loadings(self):
         plot_mats = np.arange(1, 30)
-        loads = NS._get_loadings(plot_mats)
+        loads = self._get_loadings(plot_mats)
         for j in range(loads.shape[1]):
-          plt.plot(plot_mats,loads[:, j], label = f"beta {j}" );
+          plt.plot(plot_mats, loads[:, j], label = f"beta {j}" )
           plt.xlabel('Maturity')
           plt.ylabel('Factor loading on yield')
           plt.legend()
