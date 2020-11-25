@@ -30,16 +30,16 @@ class UnivariateModels():
         starting_value = []
 
         for d in self.models:
-            b, e = d['estimator'](d['data'])
-
+            spec = self.models[d]
+            b, e = spec['estimator'](spec['data'])
             # impose b0 for simulation if parameter specified
-            if 'b0' in d:
-                b[0] = d['b0']
+            if 'b0' in spec:
+                b[0] = spec['b0']
 
             B0.append(b[0])
             B1.append(b[1])
             E.append(e)
-            starting_value.append(d['data'][-1])
+            starting_value.append(spec['data'][-1])
 
         self.B0 = np.array(B0)
         self.B1 = np.diag(np.array(B1))
