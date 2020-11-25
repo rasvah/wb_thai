@@ -33,7 +33,7 @@ class UnivariateModels():
             b, e = d['estimator'](d['data'])
 
             # impose b0 for simulation if parameter specified
-            if b0 in d:
+            if 'b0' in d:
                 b[0] = d['b0']
 
             B0.append(b[0])
