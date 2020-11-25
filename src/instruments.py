@@ -40,25 +40,6 @@ class Bond(Instrument):
                 price += amounts[j] * df
         return price
 
-    def get_CFs_period(self, begin, end):
-        # Example of commenting style to be avoided:
-        # ===========================================================
-        # = This method returns the sum of cashflows in the period  = 
-        # =                                                         =       
-        # = Inputs:                                                 =
-        # = -------                                                 =
-        # =   'begin': a datetime.date object                       =
-        # =   'end'  : a datetime.date object                       =
-        # =                                                         =
-        # = Outputs:                                                =
-        # = --------                                                =
-        # =    float containing the sum of cashflows                =
-        # =                                                         =
-        # ============================================================
-        CFs, all_dates = self.get_CFs()
-        include = [(d <= end) & (d > begin) for d in all_dates]
-        return np.array(CFs)[include].sum()
-
     def get_CFs_period(self, begin: date, end: date) -> float:
         """Return sum of all cashflows between begin and end date."""
         CFs, all_dates = self.get_CFs()
