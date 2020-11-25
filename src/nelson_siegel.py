@@ -1,7 +1,24 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-class NelsonSiegel():
+
+class NelsonSiegelModel():
+
+    def get_yields_from_factors(self, factors, mats, lambda_):
+        loadings = self._get_loadings(mats, self.lambda_)
+        return factors @ loadings.T
+
+    def _get_loadings(self, mats, lambda_):
+        # mats: (n_mats x 1) np.array
+        # return:  (n_mats x 3) np.array
+        scaled_mats = mats * lambda_
+        loading0 = np.ones_like([mats])
+        loading1 = (1 - np.exp(-scaled_mats)) / (scaled_mats)
+        loading2 = (1 - np.exp(-scaled_mats)) / (scaled_mats) \
+        - np.exp(-scaled_mats)
+        return np.vstack([loading0, loading1, loading2]).T
+
+class NelsonSiegel(NelsonSiegelModel):
 
     """ Estimation of Nelson-Siegel factors """
 
@@ -27,20 +44,6 @@ class NelsonSiegel():
     def get_fitted_yields(self, mats):
         loadings = self._get_loadings(mats, self.lambda_)
         return self.betas @ loadings.T
-
-    def get_yields_from_factors(self, factors, mats, lambda_):
-        loadings = self._get_loadings(mats, self.lambda_)
-        return factors @ loadings.T
-
-    def _get_loadings(self, mats, lambda_):
-        # mats: (n_mats x 1) np.array
-        # return:  (n_mats x 3) np.array
-        scaled_mats = mats * lambda_
-        loading0 = np.ones_like([mats])
-        loading1 = (1 - np.exp(-scaled_mats)) / (scaled_mats)
-        loading2 = (1 - np.exp(-scaled_mats)) / (scaled_mats) \
-        - np.exp(-scaled_mats)
-        return np.vstack([loading0, loading1, loading2]).T
 
     def _estimate_OLS_factors(self, yields, loadings):
         X = loadings
