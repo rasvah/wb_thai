@@ -1,5 +1,5 @@
 from src.instruments import get_adjusted_dom
-
+1
 # Run from the wb_thai root folder with the command 'pytest test/test_instruments_1a.py'
 
 def test_get_adjusted_dom_feb_leap_year():
