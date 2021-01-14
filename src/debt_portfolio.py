@@ -4,6 +4,8 @@ from datetime import date
 from calendar import monthrange
 from pandas import DataFrame
 
+DAYS_IN_YEAR = 365
+
 
 class Position:
     def __init__(self, bond, amount):
@@ -35,6 +37,17 @@ class DebtPortfolio:
         df = pd.concat(CFs, axis=1)
         df = df.fillna(value=0).sort_index()
         return df.iloc[df.index >= eval_date, :]
+
+    def get_ATM(self, eval_date):
+        maturity_dates = [p.get_CFs().index[-1] for p in self.positions]
+        amounts = [p.amount for p in self.positions]
+        total_amount = np.array(amounts).sum()
+        ATM = 0
+        for maturity_date, amount in zip(maturity_dates, amounts):
+            weight = amount / total_amount
+            TTM = (maturity_date - eval_date).days / DAYS_IN_YEAR
+            ATM = ATM + weight * TTM
+        return ATM
 
     def get_CF_period(self, begin, end):
         CFs = [p.get_CFs_period(begin, end) for p in self.positions]

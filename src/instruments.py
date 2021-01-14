@@ -3,6 +3,7 @@ from pandas import DataFrame
 from calendar import monthrange
 import numpy as np
 
+DAYS_IN_YEAR = 365
 
 def get_adjusted_dom(year: int, month: int, day: int) -> int:
     """Return 28 instead of 29 as last day of February for non-leap years."""
@@ -42,7 +43,7 @@ class Bond(Instrument):
         price = 0
         for j, d in enumerate(dates):
             if d > eval_date:
-                ttm = (d - eval_date).days / 365
+                ttm = (d - eval_date).days / DAYS_IN_YEAR
                 df  = 1 / (1 + ytm)**ttm
                 price += amounts[j] * df
         return price
@@ -74,7 +75,7 @@ class Bond(Instrument):
 
     def _get_cost_period(self, begin, end):
         amortizing = self._get_amortized_cost_period(begin, end)
-        coupon_cost = self.coupon * (end - begin).days/365
+        coupon_cost = self.coupon * (end - begin).days / DAYS_IN_YEAR
         return amortizing + coupon_cost
     
     def _get_CF_dates(self):
