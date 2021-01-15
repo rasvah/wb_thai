@@ -1,10 +1,14 @@
 from datetime import date
 
 from src.instruments import Bond
+from src.portfolio_importer import PortfolioImporter
 from src.debt_portfolio import Position, DebtPortfolio
 
 
 if __name__ == '__main__':
+
+    importer = PortfolioImporter('data/bonds.csv')
+
 
     eval_date = date(2021, 1, 14)
 
@@ -36,3 +40,5 @@ if __name__ == '__main__':
     pf.add_position(position_2)
 
     print(f"ATM (in years): {pf.get_ATM(eval_date):.2f}")
+
+    
