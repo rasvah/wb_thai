@@ -5,6 +5,7 @@ from src.portfolio_importer import PortfolioImporter
 from src.debt_portfolio import Position, DebtPortfolio
 
 
+
 if __name__ == '__main__':
 
     importer = PortfolioImporter('data/bonds.csv')
